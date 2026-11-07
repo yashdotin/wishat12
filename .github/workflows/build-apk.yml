@@ -51,7 +51,7 @@ jobs:
           gradle-version: '9.6.0'
 
       - name: Run unit tests
-        run: gradle --no-daemon testDebugUnitTest
+        run: gradle --no-daemon testDebugUnitTest --stacktrace
 
       - name: Build debug APK
         run: gradle --no-daemon assembleDebug
