@@ -46,10 +46,10 @@ fun SettingsScreen(
             Column(Modifier.padding(16.dp), verticalArrangement = Arrangement.spacedBy(12.dp)) {
                 Text("Permissions", style = MaterialTheme.typography.titleMedium)
                 SettingsRow(Icons.Default.Alarm, "Exact alarms", if (exactAllowed) "Allowed · precise reminder timing" else "Not enabled · using inexact fallback", !exactAllowed, onExactSettings)
-                Text("Exact alarms help reminders trigger close to the time you choose. Android may delay inexact alarms when this access is off.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .62f))
+                Text("Allow exact alarms for reminders to fire close to the selected time. If this is off, Android may delay reminders. After changing this setting, return to WishAt12 so it can restore your alarms.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .62f))
                 if (Build.VERSION.SDK_INT >= 33) SettingsRow(Icons.Default.Notifications, "Notifications", if (notificationsAllowed) "Enabled" else "Permission not granted", !notificationsAllowed, onNotificationPermission)
                 else SettingsRow(Icons.Default.Notifications, "Notifications", if (notificationsAllowed) "Enabled" else "Check notification settings", !notificationsAllowed, onNotificationSettings)
-                Text("Notifications must be allowed for WishAt12 to show a reminder when its alarm fires.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .62f))
+                Text("Allow WishAt12 notifications and keep the Scheduled wishes notification channel enabled. If notifications are blocked, an alarm can fire without a visible reminder.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .62f))
                 TextButton(onClick = onNotificationSettings) { Text("Open notification settings") }
             }
         }
@@ -77,7 +77,7 @@ fun SettingsScreen(
                 Text("Try it out", style = MaterialTheme.typography.titleMedium)
                 OutlinedButton(onClick = onTestNotification, modifier = Modifier.fillMaxWidth()) { Text("Send a test notification") }
                 OutlinedButton(onClick = onTestAlarm, modifier = Modifier.fillMaxWidth()) { Text("Schedule a test alarm in 1 minute") }
-                Text("The alarm test creates a temporary one-time reminder. Notifications are tests only; WhatsApp messages are never sent automatically.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .58f))
+                Text("First use Send a test notification. Then schedule the one-minute alarm, close WishAt12 normally (do not Force stop it), lock the phone and wait. The test creates a temporary reminder. Tap Open chat & send to review a WhatsApp message; you must press Send yourself.", style = MaterialTheme.typography.bodySmall, color = MaterialTheme.colorScheme.onSurface.copy(alpha = .58f))
             }
         }
         Card {
