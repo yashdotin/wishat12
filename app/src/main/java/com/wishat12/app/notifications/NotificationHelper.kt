@@ -34,6 +34,11 @@ object NotificationHelper {
         createChannel(context)
         val notificationManager = NotificationManagerCompat.from(context)
         if (!notificationManager.areNotificationsEnabled()) return false
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            val channel = context.getSystemService(NotificationManager::class.java)
+                .getNotificationChannel(CHANNEL_ID)
+            if (channel == null || channel.importance == NotificationManager.IMPORTANCE_NONE) return false
+        }
         val openApp = PendingIntent.getActivity(
             context,
             reminder.id.hashCode(),
@@ -55,13 +60,13 @@ object NotificationHelper {
         val builder = NotificationCompat.Builder(context, CHANNEL_ID)
             .setSmallIcon(android.R.drawable.ic_dialog_email)
             .setContentTitle(title)
-            .setContentText(reminder.message.take(120))
+            .setContentText(if (whatsappAction != null) "Reminder: ${reminder.message.take(90)} · Tap Open chat & send to send manually." else reminder.message.take(120))
             .setStyle(NotificationCompat.BigTextStyle().bigText(reminder.message))
             .setPriority(NotificationCompat.PRIORITY_HIGH)
             .setAutoCancel(true)
             .setContentIntent(whatsappAction ?: openApp)
         if (whatsappAction != null) {
-            builder.addAction(android.R.drawable.ic_menu_send, "Open WhatsApp", whatsappAction)
+            builder.addAction(android.R.drawable.ic_menu_send, "Open chat & send", whatsappAction)
         }
         return try {
             notificationManager.notify(reminder.id.hashCode(), builder.build())
