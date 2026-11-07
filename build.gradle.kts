@@ -3,3 +3,9 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose") version "2.4.21" apply false
     id("com.android.legacy-kapt") version "9.3.1" apply false
 }
+
+allprojects {
+    configurations.configureEach {
+        resolutionStrategy.force("org.jetbrains.kotlin:kotlin-metadata-jvm:2.4.21")
+    }
+}
