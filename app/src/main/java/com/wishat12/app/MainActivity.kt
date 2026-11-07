@@ -106,6 +106,13 @@ private fun WishAt12App(
         vm.rescheduleAll()
         exactAllowed = canScheduleExact(context)
         notificationsAllowed = hasNotificationPermission(context)
+        if (Build.VERSION.SDK_INT >= 33 && !notificationsAllowed) {
+            val preferences = context.getSharedPreferences("settings", android.content.Context.MODE_PRIVATE)
+            if (!preferences.getBoolean("notification_permission_prompted", false)) {
+                preferences.edit().putBoolean("notification_permission_prompted", true).apply()
+                notificationPermission.launch(Manifest.permission.POST_NOTIFICATIONS)
+            }
+        }
     }
 
     DisposableEffect(activity) {
@@ -177,8 +184,9 @@ private fun WishAt12App(
                             scheduledDate = java.time.LocalDate.now().toString(), scheduledTime = "00:00", timezone = java.time.ZoneId.systemDefault().id,
                             scheduledAtMillis = System.currentTimeMillis()
                         )
-                        NotificationHelper.showReminder(context, demo)
-                        snackbar = "Test notification requested."
+                        val shown = NotificationHelper.showReminder(context, demo)
+                        snackbar = if (shown) "Test notification sent. Check your notification shade."
+                        else "Notification was blocked. Enable WishAt12 notifications and check the reminder channel in Android Settings."
                     },
                     onTestAlarm = {
                         val due = System.currentTimeMillis() + 60_000L
@@ -212,7 +220,7 @@ private fun WishAt12App(
         title = { Text("WishAt12") },
         text = { Text("""A private, offline-first reminder app for birthdays, anniversaries and the moments worth remembering.
 
-WishAt12 can open WhatsApp with a prepared message, but it never sends messages automatically.
+WishAt12 schedules local reminders and can open WhatsApp with a prepared message. Tap "Open chat & send" in the reminder notification to review the message and send it yourself. WishAt12 never sends WhatsApp messages automatically.
 
 Reminders can be delayed or restricted by Android battery, alarm and notification settings. Force-stopping the app prevents scheduled delivery until it is opened again.""") },
         confirmButton = {
@@ -229,7 +237,7 @@ Reminders can be delayed or restricted by Android battery, alarm and notificatio
 
 When you export a backup, the selected JSON file contains this data. Keep it private and share it only with people you trust.
 
-When you choose Open WhatsApp, the phone number and message are passed to Android through a click-to-chat link so WhatsApp or your browser can open the conversation. WishAt12 does not send the message or verify delivery.""") },
+When you choose Open WhatsApp, the phone number and message are passed to Android through a click-to-chat link so WhatsApp or your browser can open the conversation. WishAt12 does not send the message or verify delivery. A reminder notification means only that the reminder fired; it is not proof that a WhatsApp message was sent.""") },
         confirmButton = { TextButton(onClick = { showPrivacy = false }) { Text("Close") } }
     )
     if (snackbar != null) {
